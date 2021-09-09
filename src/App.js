@@ -1,24 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import { Container } from 'react-bootstrap';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+import MovieTable from './MovieTable';
 
 function App() {
+  const [movies, setMovies] = useState([]); // inisialisasi nilai awal kosong
+  const [err, setErr] = useState("");
+  const [errBool, setErrBool] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const URL = `https://api.themoviedb.org/3/movie/popular?api_key=${"aabc82a08bdb769cd6a2daa3e6b37897"}&page=1`;
+
+  const fetchMovies = (url) => {
+    axios.get(url)
+    .then((response) => {
+      setMovies(response.data.results);
+      setLoading(false);
+      console.log(response.data.results);
+    })
+    .catch((err) => {
+      setErr(err.message);
+      setErrBool(true);
+      setLoading(false);
+    });
+  };
+
+  useEffect(() => {
+    fetchMovies(URL);
+  }, [URL]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container>
+      <MovieTable movies={movies} />
+    </Container>
   );
 }
 
